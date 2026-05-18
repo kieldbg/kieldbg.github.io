@@ -1,14 +1,16 @@
-<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1"><title>coming soon</title><style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:Arial,Helvetica,sans-serif}
+<!doctype html><html lang=en><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>coming soon</title><style>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:Arial,Helvetica,sans-serif;touch-action:none}
 canvas{display:block;position:fixed;inset:0;width:100%;height:100%}
 #introText{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;font-size:clamp(.95rem,2.7vw,2.55rem);line-height:1.25;letter-spacing:.045em;text-align:center;z-index:10;pointer-events:none;white-space:nowrap}
 #introText .date{display:block;margin-top:.35em;font-size:.62em;opacity:.9}
+#fps{position:fixed;left:6px;bottom:5px;z-index:9999;color:#000;font:10px/1 monospace;pointer-events:none;user-select:none}
 .char{display:inline-block;white-space:pre}
 .floatChar{position:fixed;left:0;top:0;z-index:20;color:#fff;font-size:clamp(.95rem,2.7vw,2.55rem);line-height:1;letter-spacing:.045em;pointer-events:none;white-space:pre;transform-origin:50% 50%;will-change:left,top,transform,opacity,filter,text-shadow}
 .floatChar.small{font-size:clamp(.6rem,1.7vw,1.6rem);opacity:.9}
-</style></head><body><div id=introText></div><script type=module>
+</style></head><body><div id=introText></div><div id=fps>debugging fps: 0</div><script type=module>
 import*as THREE from"https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js";
-const D=new Date(2026,7,6),N=new Date,T=new Date(N.getFullYear(),N.getMonth(),N.getDate()),U=Math.ceil((D-T)/864e5),I=document.getElementById("introText");
+addEventListener("wheel",e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});addEventListener("gesturestart",e=>e.preventDefault(),{passive:false});addEventListener("gesturechange",e=>e.preventDefault(),{passive:false});addEventListener("gestureend",e=>e.preventDefault(),{passive:false});addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&["=","+","-","0"].includes(e.key))e.preventDefault()});
+const D=new Date(2026,7,6),N=new Date,T=new Date(N.getFullYear(),N.getMonth(),N.getDate()),U=Math.ceil((D-T)/864e5),I=document.getElementById("introText"),FPS=document.getElementById("fps");
 function C(t,p,c=""){for(const h of t){let s=document.createElement("span");s.className=`char ${c}`;s.textContent=h==" "?"\u00a0":h;p.appendChild(s)}}
 if(U>0){let m=document.createElement("div"),w=U==1?"day":"days";C(`make sure to come back in ${U} ${w}`,m);let d=document.createElement("div");d.className="date";C("(august 6, 2026)",d,"dateChar");I.append(m,d)}else I.style.display="none";
 const scene=new THREE.Scene,camera=new THREE.Camera,renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:"high-performance",alpha:false,stencil:false,depth:false}),clock=new THREE.Clock,uniforms={uTime:{value:0},uStart:{value:-1},uResolution:{value:new THREE.Vector2(1,1)}};
@@ -55,6 +57,6 @@ function animateTextIntoCenterThenExplode(){
   requestAnimationFrame(frame)
 }
 if(U>0)setTimeout(animateTextIntoCenterThenExplode,4e3);
-function animate(){uniforms.uTime.value=clock.getElapsedTime();renderer.render(scene,camera);requestAnimationFrame(animate)}animate();
+let fc=0,ft=performance.now();function animate(){uniforms.uTime.value=clock.getElapsedTime();renderer.render(scene,camera);fc++;const n=performance.now();if(n-ft>250){FPS.textContent="debugging fps: "+Math.round(fc*1000/(n-ft));fc=0;ft=n}requestAnimationFrame(animate)}animate();
 addEventListener("resize",Q);
 </script></body></html>
